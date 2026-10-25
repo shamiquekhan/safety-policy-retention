@@ -1,6 +1,7 @@
-version: "0.1-draft"
-status: "protocol-design"
+version: "0.2-draft"
+status: "validator_and_training_design"
 policy_version: "0.1-draft"
+training_spec: "configs/training.yaml"
 
 conditions:
   A_base_guard_off:
@@ -20,6 +21,8 @@ scenario_partitions:
   train: template_disjoint
   development: template_disjoint
   test: template_disjoint
+  paired_context_flips_stay_together: true
+  pilot_manifest: data/splits/pilot_scenarios.jsonl
   test_categories:
     - familiar_templates
     - held_out_rule_combinations
@@ -52,3 +55,8 @@ guard_off_contract:
   action_rewrite: false
   implicit_permission_check: false
   implicit_approval_insertion: false
+
+logging_contract:
+  append_only_event_log: true
+  required_state_hashes: [state_before_hash, state_after_hash]
+  proposal_and_execution_logged_separately: true

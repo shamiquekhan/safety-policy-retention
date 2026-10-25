@@ -13,7 +13,7 @@ of legitimate task completion?
 
 Policy-supervised SFT (C) versus trajectory-only SFT (B), evaluated on the
 same held-out episodes with the runtime guard disabled. PS-SFT means the same
-corrected action targets plus explicit decision-level constraint labels and an
+corrected action targets plus explicit decision-level policy labels and an
 auxiliary policy loss; it does not include optimizer-level constrained
 fine-tuning methods.
 
@@ -35,7 +35,8 @@ exact model identifier, revision/hash, tokenizer, context length and license
 before training. Use parameter-efficient SFT if needed. Do not add RL in the
 first comparison.
 
-D and C must share corrected trajectories, scenario IDs, token budget,
+B and C must share corrected trajectories, policy-assessment examples,
+scenario IDs, token budget,
 optimization budget, checkpoint selection, data ordering policy and training
 seeds. C adds only the deterministic policy-label auxiliary loss described in
 `research/experiment_protocol.md`.

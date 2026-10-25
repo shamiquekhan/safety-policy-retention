@@ -1,8 +1,9 @@
 # Literature assessment: does PS-SFT improve safety after guard removal?
 
 **Assessment date:** 25 October 2026
-**Status:** Working synthesis; numerical claims require primary-table verification
-before publication.
+**Status:** Primary-paper audit completed on 25 October 2026; numerical claims
+and code-level details remain bounded by the evidence table in
+`research/direct_overlap_audit.md`.
 
 ## Bottom line
 

@@ -6,9 +6,10 @@ runtime guard is disabled.
 
 ## Current status
 
-**Stage:** literature audit and protocol design. No model fine-tuning has started.
+**Stage:** validator-first pipeline and direct-overlap audit. No model
+fine-tuning or baseline model run has started.
 
-**Working question:** Does adding explicit, machine-checkable constraint
+**Working question:** Does adding explicit, machine-checkable policy
 supervision—called **policy-supervised SFT (PS-SFT)** here—to corrected-
 trajectory SFT reduce post-guard-removal policy violations compared with
 trajectory-only SFT, while preserving legitimate task completion under held-out
@@ -21,8 +22,8 @@ or safety-gradient projection; those are separate future comparisons.
 
 This is a candidate contribution, not a confirmed novelty claim. The closest
 literature already covers harness distillation, runtime-semantics supervision,
-policy internalization and agent safety evaluation. The project therefore begins
-with an evidence-backed gap audit before simulator implementation or training.
+policy internalization and agent safety evaluation. The project therefore keeps
+the gap claim bounded while validating the simulator before training.
 
 ## Repository map
 
@@ -30,7 +31,7 @@ with an evidence-backed gap audit before simulator implementation or training.
 research/       research question, literature matrix, protocol, preregistration
 configs/        versioned policy and experiment specifications
 data/           synthetic data and frozen split manifests (no model weights)
-src/            future sandbox, validator, agent, training and evaluation code
+src/            validator, training-data builders and future agent/evaluation code
 tests/          validator and simulator tests
 scripts/        reproducible command-line entry points
 results/        pilot/main outputs and figures; generated files are ignored
@@ -60,6 +61,7 @@ paper/          outline and limitations
 5. `research/experiment_protocol.md`
 6. `research/preregistration.md` (draft; not frozen until the pilot is stable)
 7. `data/splits/pilot_scenarios.jsonl`
+8. `configs/training.yaml`
 
 ## Reproducibility rule
 

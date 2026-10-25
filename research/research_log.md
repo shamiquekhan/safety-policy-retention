@@ -67,3 +67,24 @@ closest papers before preregistration is frozen.
 - Added tests for authorization, confidentiality, approval handling, injected
   instructions, guard-on blocking, guard-off state mutation and context flips.
 - Verification: `python3 -m pytest -q` passed with 8 tests and 20 subtests.
+
+## 2026-10-25 — Shared-interface PS-SFT and sandbox runner milestone
+
+- Replaced the combined decision/action inference format with action-only
+  inference for every condition.
+- Specified separate `[ACTION]` and `[POLICY_CHECK]` training tasks over one
+  shared backbone.
+- Defined `L_B = L_action` and
+  `L_C = L_action + lambda_policy * L_policy`, with separate token
+  normalization and matched examples/order for B and C.
+- Added `configs/training.yaml`, `src/training/examples.py` and
+  `scripts/build_training_examples.py` so B/C data equivalence can be checked
+  before a model-specific trainer is selected.
+- Added stable scenario hashes, shift categories and pilot split metadata.
+- Added template/pair split validation and an append-only episode runner that
+  records proposals, validator labels, guard interventions, executions and
+  state hashes.
+- Completed a primary-paper direct-overlap audit for Harness-Zero, HPD and
+  SafeEvolve. The go decision remains provisional and is now framed as a
+  matched B-versus-C comparison rather than a claim that safety transfer is
+  unexplored.

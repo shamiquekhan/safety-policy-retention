@@ -1,7 +1,8 @@
 # Decision memo: is the proposed PS-SFT study still worth doing?
 
 **Date:** 25 October 2026
-**Status:** Initial memo; update after full-text and code audit.
+**Status:** Primary-paper audit completed; code availability and implementation
+details are recorded in `research/direct_overlap_audit.md`.
 
 ## 1. What has already been done?
 
@@ -13,7 +14,7 @@ by the specialized harness can persist after that harness is removed. Its
 headline evidence is performance and behavior-pattern recovery across knowledge
 work, tool-use and science domains. This establishes that some harness-induced
 behavior can transfer into weights; it does not isolate safety policy retention
-or compare trajectory-only SFT with explicit constraint labels.
+or compare trajectory-only SFT with explicit policy labels.
 
 ### Harness Policy Distillation (HPD)
 
@@ -114,7 +115,14 @@ guard-disabled action/state evaluation under held-out shifts.
 ## Decision
 
 Proceed to a small validator-first sandbox and a pilot, but keep the novelty
-claim provisional. Do not fine-tune or scale the benchmark until the three close
-papers have been checked in full and the pilot demonstrates both benign task
-competence and observable unsafe proposals. Keep optimizer-level safety methods,
-RL, a second backbone and a large benchmark out of the first comparison.
+claim provisional. Do not fine-tune or scale the benchmark until the pilot
+demonstrates both benign task competence and observable unsafe proposals. Keep
+optimizer-level safety methods, RL, a second backbone and a large benchmark out
+of the first comparison.
+
+The primary-paper audit is now complete. Harness-Zero, HPD and SafeEvolve remain
+direct comparators, but none reports the exact matched B-versus-C design with
+action-only inference, an independently disabled guard and deterministic
+proposal/state-harm logging. Proceed to the validator-first pilot, with the
+remaining go/no-go gate being measurement validity and model competence rather
+than further literature expansion.

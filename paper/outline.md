@@ -29,7 +29,7 @@
 
 - Sandbox and deterministic validator.
 - Corrected-trajectory and auxiliary policy supervision (PS-SFT).
-- Conditions A–F.
+- Conditions A–D.
 - Event log and replayability.
 - Template-level data split.
 

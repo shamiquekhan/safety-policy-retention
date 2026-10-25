@@ -1,0 +1,46 @@
+version: "0.1-draft"
+status: "design_only_until_backbone_is_selected"
+
+tasks:
+  action:
+    prefix: "[ACTION]"
+    input: [policy_text, task, state]
+    target: action_json_only
+  policy_check:
+    prefix: "[POLICY_CHECK]"
+    input: [policy_text, task, state, candidate_action]
+    target: [compliant, rule_id, requires_approval, safe_alternative]
+
+inference:
+  task: action
+  output_schema: action_json_only
+  decision_field_required: false
+  validator_labels_are_observer_only: true
+
+objectives:
+  action_loss:
+    normalization: mean_over_nonmasked_target_tokens
+    weight: 1.0
+  policy_loss:
+    normalization: mean_over_nonmasked_target_tokens
+    lambda_policy: "FREEZE_ON_DEVELOPMENT_SET_BEFORE_MAIN_RUN"
+
+conditions:
+  B_trajectory_sft:
+    action_loss_weight: 1.0
+    policy_loss_weight: 0.0
+  C_policy_supervised_sft:
+    action_loss_weight: 1.0
+    policy_loss_weight: "lambda_policy"
+
+matched_schedule:
+  same_action_examples: true
+  same_policy_check_examples: true
+  same_example_ordering: true
+  same_token_budget: true
+  same_optimizer_budget: true
+  policy_examples_present_in_B_with_zero_loss: true
+
+label_source:
+  policy_check_targets: deterministic_validator
+  model_policy_labels_used_at_evaluation: false

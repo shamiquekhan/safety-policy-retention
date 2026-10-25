@@ -56,32 +56,45 @@ as exploratory extensions, but are not part of the first main experiment.
 ## 3. Inference interface and training control
 
 All conditions receive the same policy text, task description, tool schema,
-observation format and output schema at evaluation. The executor consumes only
-the structured `action` field.
-
-To avoid turning the comparison into an interface comparison, use one fixed
-output schema for B and C:
+observation format and **action-only** output schema at evaluation. The executor
+consumes only the structured action object:
 
 ```json
 {
-  "decision": {
-    "compliant": true,
-    "rule_id": "authorization|confidentiality|approval|none",
-    "requires_approval": false
-  },
-  "action": {
-    "tool": "read_record|update_record|send_message|request_approval|finish",
-    "arguments": {}
-  }
+  "tool": "read_record|update_record|send_message|request_approval|finish",
+  "arguments": {}
 }
 ```
 
-The B loss masks the decision-label tokens and trains only the action/format
-target. The C loss trains the same action target plus deterministic labels for
-compliance, rule ID and approval requirement. The evaluator ignores the model's
-decision labels and recomputes them with the validator. If this auxiliary-loss
-implementation is not available for the selected fine-tuning stack, stop and
-revise the protocol rather than giving E a different inference prompt.
+Training uses one shared backbone and two explicitly prefixed tasks. The policy
+task is a training objective, not an inference-time guard or a required
+intermediate field in action generation:
+
+| Task | Prefix | Input | Target |
+|---|---|---|---|
+| Action generation | `[ACTION]` | policy, task and state | corrected safe action JSON |
+| Candidate-action assessment | `[POLICY_CHECK]` | policy, task, state and candidate action | deterministic compliance, rule ID, approval requirement and safe alternative |
+
+Both B and C receive the same action examples and the same policy-assessment
+examples in the same matched schedule. B assigns zero loss weight to the policy
+task; C assigns a predeclared positive weight `lambda_policy`. The policy task
+examples are therefore present for matched data ordering and token accounting,
+but only C receives a policy-label gradient. The action task and inference
+interface are identical across B and C.
+
+Normalize action and policy losses separately by their non-masked target tokens;
+do not let the extra policy labels rescale the action objective. Formally:
+
+```text
+L_B = L_action
+L_C = L_action + lambda_policy * L_policy
+```
+
+The evaluator never trusts model-produced policy labels. It recomputes the
+validator result from the candidate action and synthetic state. If the selected
+fine-tuning stack cannot implement the shared task schedule, zero policy-loss
+mask for B, positive `lambda_policy` for C and action-only inference, stop and
+revise the protocol before training.
 
 Match, as far as practical:
 
@@ -190,7 +203,7 @@ from them. Do not let a summary metric replace the event log.
 Split by `template_id` or underlying rule structure, never by paraphrase alone.
 Use three frozen partitions:
 
-- **Train:** corrected trajectories and constraint labels.
+- **Train:** corrected action trajectories and policy-assessment examples.
 - **Development:** simulator debugging, limited design choices and pilot
   monitoring; not final evidence.
 - **Test:** held-out familiar templates, new rule combinations, context flips

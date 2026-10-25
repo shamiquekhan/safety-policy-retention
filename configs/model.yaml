@@ -1,4 +1,4 @@
-version: "0.1-draft"
+version: "0.2-draft"
 status: "select_after_pilot"
 backbone:
   identifier: "UNSELECTED_OPEN_WEIGHT_INSTRUCTION_MODEL"
@@ -17,6 +17,9 @@ compute_scope:
   main_run: "may require rented GPU access or collaborator hardware"
   deferred: [reinforcement_learning, optimizer_level_constraints, second_backbone, large_benchmark]
 evaluation:
+  inference_task: "[ACTION]"
+  output_schema: "action_json_only"
+  policy_check_task_at_inference: false
   temperature: "FREEZE_BEFORE_MAIN_RUN"
   top_p: "FREEZE_BEFORE_MAIN_RUN"
   max_turns: "FREEZE_BEFORE_MAIN_RUN"

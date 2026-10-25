@@ -44,7 +44,7 @@ The main causal comparison is:
 
 1. **Trajectory SFT:** corrected safe trajectories only.
 2. **Policy-supervised SFT (PS-SFT):** the same corrected trajectories plus
-   deterministic, decision-level constraint labels, trained with an auxiliary
+   deterministic, decision-level policy labels, trained with an auxiliary
    loss.
 
 The study should also include a base-policy guard-off reference, a policy-prompt
@@ -81,7 +81,7 @@ least one bounded result:
 - a matched comparison of trajectory-only SFT and PS-SFT after guard removal;
 - a reproducible action/state logging and validation protocol;
 - a specific, repeatable failure mode under compositional or contextual shift;
-- or a useful null result showing that additional constraint labels do not help
+- or a useful null result showing that additional policy supervision does not help
   after controlling for data volume, optimization budget and task competence.
 
 The work must not claim that guard removal proves policy internalization, that a
