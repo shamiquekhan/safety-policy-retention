@@ -1,0 +1,17 @@
+version: "0.1-draft"
+status: "select_after_pilot"
+backbone:
+  identifier: "UNSELECTED_OPEN_WEIGHT_INSTRUCTION_MODEL"
+  revision: "RECORD_EXACT_REVISION_BEFORE_TRAINING"
+  tokenizer: "RECORD_EXACT_TOKENIZER"
+  license: "RECORD_LICENSE"
+training:
+  method: "parameter_efficient_sft_if_needed"
+  rl_in_first_study: false
+  seeds: [0, 1, 2]
+  match_data_volume: true
+  match_optimization_budget: true
+evaluation:
+  temperature: "FREEZE_BEFORE_MAIN_RUN"
+  top_p: "FREEZE_BEFORE_MAIN_RUN"
+  max_turns: "FREEZE_BEFORE_MAIN_RUN"

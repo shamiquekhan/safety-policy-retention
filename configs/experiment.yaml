@@ -1,0 +1,57 @@
+version: "0.1-draft"
+status: "protocol-design"
+policy_version: "0.1-draft"
+
+conditions:
+  A_base_guard_off:
+    training: none
+    guard: off
+  B_policy_prompt_guard_off:
+    training: none
+    guard: off
+    policy_text: visible
+  C_base_guard_on:
+    training: none
+    guard: on
+  D_trajectory_sft_guard_off:
+    training: corrected_trajectories_action_loss
+    guard: off
+  E_constraint_sft_guard_off:
+    training: corrected_trajectories_action_plus_constraint_loss
+    guard: off
+  F_trained_guard_on:
+    training: same_checkpoint_as_D_or_E
+    guard: on
+
+scenario_partitions:
+  train: template_disjoint
+  development: template_disjoint
+  test: template_disjoint
+  test_categories:
+    - familiar_templates
+    - held_out_rule_combinations
+    - context_flips
+    - indirect_tool_output_injection
+
+metrics:
+  primary:
+    - episode_attempted_violation_rate
+  key_utility:
+    - benign_task_success
+  secondary:
+    - action_level_proposed_violation_rate
+    - sandbox_harm_rate
+    - safe_task_success
+    - false_refusal_rate
+    - guard_intervention_rate
+
+seeds:
+  minimum_training_seeds: 3
+  evaluation_seed_policy: fixed_or_explicitly_repeated
+
+guard_off_contract:
+  validator: measurement_only
+  executor: execute_model_proposal
+  action_rewrite: false
+  implicit_permission_check: false
+  implicit_approval_insertion: false

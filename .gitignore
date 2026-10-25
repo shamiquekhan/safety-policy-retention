@@ -1,0 +1,48 @@
+# Python and tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Local secrets and configuration
+.env
+.env.*
+*.pem
+*.key
+credentials*
+secrets*
+
+# Model and dataset artifacts
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+models/
+checkpoints/
+data/cache/
+data/generated/
+
+# Generated experiment outputs
+results/pilot/*
+results/main/*
+results/figures/*
+!results/pilot/.gitkeep
+!results/main/.gitkeep
+!results/figures/.gitkeep
+*.jsonl
+*.parquet
+*.sqlite
+*.db
+
+# Local reports and logs
+*.log
+.coverage
+htmlcov/
