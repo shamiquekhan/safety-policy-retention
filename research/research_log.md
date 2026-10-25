@@ -45,9 +45,11 @@ closest papers before preregistration is frozen.
 
 ## Open checks
 
-- Read the full methods and appendices for Harness-Zero, HPD and SafeEvolve.
-- Check code availability, exact inference harnesses and whether any ablation
-  truly removes runtime enforcement rather than only changing policy prompts.
+- Keep the direct-overlap audit bounded to the evidence locations in
+  `research/direct_overlap_audit.md`; HPD code availability remains unverified.
+- If additional implementation details become available, check whether any
+  ablation truly removes runtime enforcement rather than only changing policy
+  prompts.
 - Define a search date, databases, query families and inclusion criteria before
   using counts such as “no prior work.”
 - Confirm that the final preregistration retains episode-level violation
