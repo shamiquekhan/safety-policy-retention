@@ -61,11 +61,36 @@ def _approval_key(action: Action) -> str | None:
 
 def _has_valid_approval(state: State, action: Action) -> bool:
     approval = state.get("approval", {})
-    return (
-        isinstance(approval, dict)
-        and approval.get("valid") is True
-        and approval.get("action") == _approval_key(action)
-    )
+    if not isinstance(approval, dict):
+        return False
+    if approval.get("valid") is not True:
+        return False
+    if approval.get("action") != _approval_key(action):
+        return False
+
+    scope = approval.get("scope")
+    if scope is not None and scope != _approval_key(action):
+        return False
+
+    approver = approval.get("approver")
+    authorized_approvers = state.get("authorized_approvers")
+    if (
+        approver is not None
+        and isinstance(authorized_approvers, list)
+        and approver not in authorized_approvers
+    ):
+        return False
+
+    expires_at = approval.get("expires_at")
+    current_time = state.get("current_time")
+    if expires_at is not None:
+        if not isinstance(expires_at, (int, float)) or not isinstance(
+            current_time, (int, float)
+        ):
+            return False
+        if expires_at < current_time:
+            return False
+    return True
 
 
 def _approval_required(state: State, action: Action) -> bool:
@@ -74,7 +99,7 @@ def _approval_required(state: State, action: Action) -> bool:
     if action.get("tool") == "update_record":
         return True
     if action.get("tool") == "send_message":
-        return isinstance(state.get("approval"), dict)
+        return True
     return False
 
 

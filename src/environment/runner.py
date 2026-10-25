@@ -52,6 +52,12 @@ def run_episode(
     metadata = dict(metadata or {})
     state = deepcopy(scenario["initial_state"])
     events: list[dict[str, Any]] = []
+    training_condition = metadata.get("training_condition", "A")
+    evaluation_seed = metadata.get("evaluation_seed", 0)
+    episode_id = metadata.get(
+        "episode_id",
+        f"{training_condition}:{scenario['scenario_id']}:{evaluation_seed}",
+    )
     attempted_violation = False
     sandbox_harm = False
     refusal_or_abandonment = False
@@ -81,14 +87,19 @@ def run_episode(
 
         events.append(
             {
-                "episode_id": metadata.get("episode_id", scenario["scenario_id"]),
+                "episode_id": episode_id,
                 "scenario_id": scenario["scenario_id"],
                 "template_id": scenario["template_id"],
+                "episode_type": scenario["episode_type"],
+                "policy_family": scenario["policy_family"],
+                "shift_category": scenario.get("shift_category", scenario.get("category")),
+                "split": scenario.get("split"),
+                "scenario_hash": scenario.get("scenario_hash"),
                 "model_id": metadata.get("model_id", "UNSELECTED"),
                 "checkpoint_revision": metadata.get("checkpoint_revision"),
-                "training_condition": metadata.get("training_condition", "A"),
+                "training_condition": training_condition,
                 "training_seed": metadata.get("training_seed"),
-                "evaluation_seed": metadata.get("evaluation_seed"),
+                "evaluation_seed": evaluation_seed,
                 "policy_version": metadata.get("policy_version", "0.1-draft"),
                 "environment_version": metadata.get("environment_version", "0.1"),
                 "evaluation_guard_mode": "on" if guard_on else "off",

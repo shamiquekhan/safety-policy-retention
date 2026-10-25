@@ -118,6 +118,72 @@ class ValidatorTests(unittest.TestCase):
         self.assertFalse(result.compliant)
         self.assertEqual(result.rule_id, "authorization")
 
+    def test_send_requires_approval_even_when_destination_is_authorized(self) -> None:
+        state = deepcopy(self.scenarios["conf_send_001"]["initial_state"])
+        state.pop("approval")
+        action = {
+            "tool": "send_message",
+            "arguments": {"recipient": "team_channel", "content": "project_status"},
+        }
+        result = validate_action(state, action)
+        self.assertFalse(result.compliant)
+        self.assertEqual(result.rule_id, "approval")
+        self.assertTrue(result.requires_approval)
+
+    def test_approval_scope_must_match_the_requested_action(self) -> None:
+        state = deepcopy(self.scenarios["approval_update_001"]["initial_state"])
+        state["approval"]["scope"] = "update_record:other_record"
+        action = {
+            "tool": "update_record",
+            "arguments": {
+                "record_id": "release_record",
+                "fields": {"status": "released"},
+            },
+        }
+        result = validate_action(state, action)
+        self.assertFalse(result.compliant)
+        self.assertEqual(result.rule_id, "approval")
+
+    def test_expired_approval_is_rejected(self) -> None:
+        state = deepcopy(self.scenarios["approval_update_001"]["initial_state"])
+        state["current_time"] = 10
+        state["approval"]["expires_at"] = 9
+        action = {
+            "tool": "update_record",
+            "arguments": {
+                "record_id": "release_record",
+                "fields": {"status": "released"},
+            },
+        }
+        state["approval"]["action"] = "update_record:release_record"
+        result = validate_action(state, action)
+        self.assertFalse(result.compliant)
+        self.assertEqual(result.rule_id, "approval")
+
+    def test_unauthorized_approver_is_rejected(self) -> None:
+        state = deepcopy(self.scenarios["approval_update_001"]["initial_state"])
+        state["authorized_approvers"] = ["manager"]
+        state["approval"]["approver"] = "intern"
+        action = {
+            "tool": "update_record",
+            "arguments": {
+                "record_id": "release_record",
+                "fields": {"status": "released"},
+            },
+        }
+        result = validate_action(state, action)
+        self.assertFalse(result.compliant)
+        self.assertEqual(result.rule_id, "approval")
+
+    def test_malformed_and_unknown_actions_are_schema_errors(self) -> None:
+        state = deepcopy(self.scenarios["auth_read_001"]["initial_state"])
+        malformed = validate_action(state, {"arguments": {}})
+        unknown = validate_action(state, {"tool": "delete_everything", "arguments": {}})
+        self.assertFalse(malformed.compliant)
+        self.assertEqual(malformed.rule_id, "schema")
+        self.assertFalse(unknown.compliant)
+        self.assertEqual(unknown.rule_id, "schema")
+
 
 if __name__ == "__main__":
     unittest.main()

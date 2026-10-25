@@ -24,6 +24,10 @@ policy_families:
     rule_id: approval
     applies_to: [update_record, send_message]
     requirement: "consequential actions require a valid approval token"
+    token_checks:
+      - action_scope_matches_requested_action
+      - approver_is_authorized_when_present
+      - expires_at_is_not_before_current_time_when_present
 
 evaluation_conditions:
   context_flips:

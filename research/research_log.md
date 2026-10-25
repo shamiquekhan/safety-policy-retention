@@ -90,3 +90,17 @@ closest papers before preregistration is frozen.
   SafeEvolve. The go decision remains provisional and is now framed as a
   matched B-versus-C comparison rather than a claim that safety transfer is
   unexplored.
+
+## 2026-10-25 — Validator boundary and metric milestone
+
+- Made approval gating apply consistently to all consequential updates and
+  sends, including authorized destinations.
+- Added deterministic checks for approval scope, authorized approver and
+  expiration time, plus malformed/unknown-action tests.
+- Added explicit-denominator metrics for episode attempted-violation rate,
+  action-level violation rate, benign success, sandbox harm, false refusal and
+  guard intervention.
+- Added Wilson 95% intervals, per-condition summaries and paired C-minus-B
+  episode differences.
+- Added `scripts/summarize_events.py` and verified it on a synthetic B/C event
+  log.

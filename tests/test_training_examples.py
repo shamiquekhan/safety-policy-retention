@@ -62,12 +62,15 @@ class TrainingExampleTests(unittest.TestCase):
     def test_policy_task_is_validator_labelled_and_prefixed(self) -> None:
         policy_examples = [item for item in self.condition_c if item.task == "policy_check"]
         self.assertEqual(len(policy_examples), len(self.cases))
+        labels = set()
         for example in policy_examples:
             self.assertTrue(example.prompt.startswith("[POLICY_CHECK]\n"))
             target = json.loads(example.target)
             self.assertIn("compliant", target)
             self.assertIn("rule_id", target)
             self.assertIn("requires_approval", target)
+            labels.add(target["compliant"])
+        self.assertEqual(labels, {True, False})
 
 
 if __name__ == "__main__":
