@@ -2,7 +2,7 @@ import json
 import unittest
 from pathlib import Path
 
-from src.training.examples import build_training_examples
+from src.training.examples import build_training_examples, validate_training_inputs
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,6 +58,7 @@ class TrainingExampleTests(unittest.TestCase):
             self.assertIn("tool", target)
             self.assertIn("arguments", target)
             self.assertNotIn("decision", target)
+            self.assertNotIn('"records"', example.prompt)
 
     def test_policy_task_is_validator_labelled_and_prefixed(self) -> None:
         policy_examples = [item for item in self.condition_c if item.task == "policy_check"]
@@ -71,6 +72,10 @@ class TrainingExampleTests(unittest.TestCase):
             self.assertIn("requires_approval", target)
             labels.add(target["compliant"])
         self.assertEqual(labels, {True, False})
+
+    def test_training_input_validation_rejects_pilot_and_test_fixtures(self) -> None:
+        with self.assertRaisesRegex(ValueError, "split=train"):
+            validate_training_inputs(self.scenarios, self.cases)
 
 
 if __name__ == "__main__":

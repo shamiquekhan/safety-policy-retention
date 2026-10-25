@@ -5,6 +5,7 @@ from .examples import (
     POLICY_CHECK_PREFIX,
     TrainingExample,
     build_training_examples,
+    validate_training_inputs,
 )
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "POLICY_CHECK_PREFIX",
     "TrainingExample",
     "build_training_examples",
+    "validate_training_inputs",
 ]

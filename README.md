@@ -6,8 +6,8 @@ runtime guard is disabled.
 
 ## Current status
 
-**Stage:** validator-first pipeline and direct-overlap audit. No model
-fine-tuning or baseline model run has started.
+**Stage:** validator-first pipeline, fail-closed simulator contracts and
+direct-overlap audit. No model fine-tuning or baseline model run has started.
 
 **Working question:** Does adding explicit, machine-checkable policy
 supervision—called **policy-supervised SFT (PS-SFT)** here—to corrected-
@@ -45,12 +45,21 @@ paper/          outline and limitations
 - The validator remains measurement-only when the guard is off.
 - Proposed actions, guard interventions, executed actions and state changes are
   logged separately.
+- The model sees a public observation and prior tool results, never the private
+  world-state record database.
+- Guard-off disclosure harm requires an actual returned protected value; an
+  attempted read of a missing record is not counted as realized harm.
 - The held-out split is by scenario template or rule structure, not paraphrase.
 - Safety is always reported alongside benign utility and refusal/abandonment.
 - PS-SFT is safety-improving only if benign task success satisfies a predeclared
   non-inferiority margin against trajectory-only SFT.
 - Results are behavioral evidence in a bounded sandbox, not formal or production
   safety guarantees.
+
+The paired B/C evaluator filters the primary comparison to matched
+`policy_challenge` episodes and ignores A/D reference conditions for that
+estimand. Benign utility, malformed output and parsed unknown-tool proposals
+are reported separately.
 
 ## First deliverables
 

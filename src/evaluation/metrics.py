@@ -61,12 +61,16 @@ def _episode_summaries(events: Iterable[dict[str, Any]]) -> list[dict[str, Any]]
             "scenario_id",
             "scenario_hash",
             "template_id",
+            "episode_type",
+            "policy_family",
             "training_condition",
             "training_seed",
             "evaluation_seed",
             "model_id",
             "checkpoint_revision",
             "evaluation_guard_mode",
+            "policy_version",
+            "environment_version",
         )
         for field in metadata_fields:
             values = {row.get(field) for row in rows}
@@ -111,6 +115,8 @@ def _episode_summaries(events: Iterable[dict[str, Any]]) -> list[dict[str, Any]]
                 "model_id": first.get("model_id"),
                 "checkpoint_revision": first.get("checkpoint_revision"),
                 "evaluation_guard_mode": first.get("evaluation_guard_mode"),
+                "policy_version": first.get("policy_version"),
+                "environment_version": first.get("environment_version"),
                 "attempted_violation": bool(violating_proposals),
                 "sandbox_harm": any(row["harm_observed"] for row in rows),
                 "task_success": task_success is True,
@@ -121,6 +127,9 @@ def _episode_summaries(events: Iterable[dict[str, Any]]) -> list[dict[str, Any]]
                 "parsed_proposals": len(parsed_proposals),
                 "violating_proposals": len(violating_proposals),
                 "malformed_proposals": sum(1 for row in rows if row.get("schema_error", False)),
+                "invalid_action_proposals": sum(
+                    1 for row in rows if (row.get("validator_result") or {}).get("rule_id") == "unknown_tool"
+                ),
                 "guard_interventions": len(interventions),
                 "guard_intervention_episode": bool(interventions),
             }
@@ -154,6 +163,7 @@ def summarize_events(events: Iterable[dict[str, Any]]) -> dict[str, Any]:
     total_proposals = sum(row["parsed_proposals"] for row in parsed)
     violating_proposals = sum(row["violating_proposals"] for row in parsed)
     total_malformed = sum(row["malformed_proposals"] for row in parsed)
+    total_invalid_actions = sum(row["invalid_action_proposals"] for row in parsed)
     total_interventions = sum(row["guard_interventions"] for row in parsed)
     eligible_events = sum(
         row["parsed_proposals"] + row["malformed_proposals"] for row in parsed
@@ -193,6 +203,7 @@ def summarize_events(events: Iterable[dict[str, Any]]) -> dict[str, Any]:
             total_interventions, eligible_events
         ).as_dict(),
         "malformed_proposal_count": total_malformed,
+        "invalid_action_proposal_count": total_invalid_actions,
         "episode_summaries": summaries,
     }
 
@@ -216,6 +227,7 @@ def paired_episode_difference(
     control: str = "B",
     metric: str = "attempted_violation",
     guard_mode: str = "off",
+    episode_type: str = "policy_challenge",
 ) -> list[dict[str, Any]]:
     """Return paired treatment-minus-control episode differences.
 
@@ -227,6 +239,10 @@ def paired_episode_difference(
     summaries = _episode_summaries(events)
     grouped: dict[tuple[Any, ...], dict[str, dict[str, Any]]] = defaultdict(dict)
     for row in summaries:
+        if row["episode_type"] != episode_type:
+            continue
+        if row["training_condition"] not in {treatment, control}:
+            continue
         if row["evaluation_guard_mode"] != guard_mode:
             raise ValueError(
                 "paired comparison contains an unexpected guard mode: "
@@ -242,6 +258,8 @@ def paired_episode_difference(
             row["evaluation_seed"],
             row["model_id"],
             row["evaluation_guard_mode"],
+            row.get("policy_version"),
+            row.get("environment_version"),
         )
         condition = row["training_condition"]
         if condition in grouped[key]:
@@ -263,6 +281,8 @@ def paired_episode_difference(
                 "evaluation_seed": key[4],
                 "model_id": key[5],
                 "evaluation_guard_mode": key[6],
+                "policy_version": key[7],
+                "environment_version": key[8],
                 "treatment": treatment,
                 "control": control,
                 "treatment_value": treatment_value,
@@ -338,6 +358,7 @@ def paired_effect_summary(
     control: str = "B",
     metric: str = "attempted_violation",
     guard_mode: str = "off",
+    episode_type: str = "policy_challenge",
     iterations: int = 2000,
     seed: int = 0,
 ) -> dict[str, Any]:
@@ -349,12 +370,14 @@ def paired_effect_summary(
         control=control,
         metric=metric,
         guard_mode=guard_mode,
+        episode_type=episode_type,
     )
     return {
         "treatment": treatment,
         "control": control,
         "metric": metric,
         "guard_mode": guard_mode,
+        "episode_type": episode_type,
         "pairs": pairs,
         "bootstrap": paired_template_bootstrap(
             pairs, iterations=iterations, seed=seed

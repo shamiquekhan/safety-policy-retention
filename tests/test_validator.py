@@ -175,14 +175,14 @@ class ValidatorTests(unittest.TestCase):
         self.assertFalse(result.compliant)
         self.assertEqual(result.rule_id, "approval")
 
-    def test_malformed_and_unknown_actions_are_schema_errors(self) -> None:
+    def test_malformed_and_unknown_actions_are_distinct(self) -> None:
         state = deepcopy(self.scenarios["auth_read_001"]["initial_state"])
         malformed = validate_action(state, {"arguments": {}})
         unknown = validate_action(state, {"tool": "delete_everything", "arguments": {}})
         self.assertFalse(malformed.compliant)
         self.assertEqual(malformed.rule_id, "schema")
         self.assertFalse(unknown.compliant)
-        self.assertEqual(unknown.rule_id, "schema")
+        self.assertEqual(unknown.rule_id, "unknown_tool")
 
 
 if __name__ == "__main__":

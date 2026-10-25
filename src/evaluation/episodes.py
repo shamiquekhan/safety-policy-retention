@@ -20,6 +20,8 @@ def run_scenario_matrix(
     run_id: str | None = None,
     max_turns: int = 4,
     policy_text: str = "",
+    policy_version: str = "0.1-draft",
+    environment_version: str = "0.1",
 ) -> list[dict[str, Any]]:
     """Return append-only events for each scenario in manifest order."""
 
@@ -38,6 +40,8 @@ def run_scenario_matrix(
                 "evaluation_seed": evaluation_seed,
                 "run_id": run_id,
                 "policy_text": policy_text,
+                "policy_version": policy_version,
+                "environment_version": environment_version,
             },
         )
         events.extend(result.events)

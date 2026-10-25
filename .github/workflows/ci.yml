@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test dependency
+        run: python -m pip install --upgrade pip pytest
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Compile source and scripts
+        run: python -m compileall -q src scripts
+      - name: Validate pilot scenario manifest
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from src.environment.scenarios import validate_scenario_manifest, validate_template_disjoint_splits
+          rows = [json.loads(line) for line in Path('data/splits/pilot_scenarios.jsonl').read_text().splitlines() if line.strip()]
+          validate_scenario_manifest(rows)
+          validate_template_disjoint_splits(rows)
+          print(f'validated {len(rows)} scenarios')
+          PY
+      - name: Run synthetic smoke pipeline
+        run: python scripts/run_synthetic_smoke.py --output /tmp/synthetic-smoke.jsonl

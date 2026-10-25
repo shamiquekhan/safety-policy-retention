@@ -9,9 +9,51 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from .validator import Action, State, guarded_execute
+from .success import evaluate_task_success
 
 ProposalFn = Callable[[dict[str, Any]], Action | None]
 SuccessFn = Callable[[State, dict[str, Any]], bool]
+
+
+def build_agent_observation(
+    scenario: dict[str, Any],
+    state: State,
+    *,
+    tool_history: list[dict[str, Any]],
+    turn_index: int,
+    policy_text: str,
+) -> dict[str, Any]:
+    """Build only the context the agent is allowed to observe.
+
+    Records and other private world-state fields are intentionally excluded.
+    Scenario authors may provide an explicit ``public_context``; otherwise the
+    small set of decision-relevant control facts is projected from private state.
+    """
+
+    public_context = deepcopy(scenario.get("public_context", {}))
+    if isinstance(public_context, dict):
+        public_context.pop("records", None)
+    if not public_context:
+        public_context = {
+            key: deepcopy(state[key])
+            for key in (
+                "principal",
+                "authorized_records",
+                "authorized_destinations",
+                "approval",
+                "authorized_approvers",
+                "current_time",
+            )
+            if key in state
+        }
+    return {
+        "task": scenario["task"],
+        "policy": policy_text,
+        "public_context": public_context,
+        "tool_history": deepcopy(tool_history),
+        "turn_index": turn_index,
+        "scenario_id": scenario["scenario_id"],
+    }
 
 
 def _state_hash(state: State) -> str:
@@ -52,6 +94,8 @@ def run_episode(
     metadata = dict(metadata or {})
     state = deepcopy(scenario["initial_state"])
     events: list[dict[str, Any]] = []
+    tool_history: list[dict[str, Any]] = []
+    visible_tool_history: list[dict[str, Any]] = []
     training_condition = metadata.get("training_condition", "A")
     training_seed = metadata.get("training_seed")
     evaluation_seed = metadata.get("evaluation_seed", 0)
@@ -80,18 +124,33 @@ def run_episode(
     for turn_index in range(max_turns):
         state_before = deepcopy(state)
         state_before_hash = _state_hash(state_before)
-        observation = {
-            "task": scenario["task"],
-            "policy": metadata.get("policy_text", ""),
-            "state": deepcopy(state_before),
-            "turn_index": turn_index,
-            "scenario_id": scenario["scenario_id"],
-        }
+        observation = build_agent_observation(
+            scenario,
+            state_before,
+            tool_history=visible_tool_history,
+            turn_index=turn_index,
+            policy_text=metadata.get("policy_text", ""),
+        )
         action = propose(observation)
         next_state, validation, execution = guarded_execute(
             state_before, action, guard_on=guard_on
         )
         state = next_state
+        tool_history.append(
+            {
+                "action": deepcopy(action),
+                "validation": validation.as_dict(),
+                "execution": deepcopy(execution),
+            }
+        )
+        visible_tool_history.append(
+            {
+                "action": deepcopy(action),
+                "tool_result": deepcopy(execution.get("tool_result")),
+                "executed": bool(execution.get("executed")),
+                "guard_intervention": execution.get("guard_intervention"),
+            }
+        )
         attempted_violation = attempted_violation or not validation.compliant
         sandbox_harm = sandbox_harm or execution.get("harm_observed", False)
         action_is_dict = isinstance(action, dict)
@@ -121,6 +180,7 @@ def run_episode(
                 "turn_index": turn_index,
                 "initial_state_id": scenario["scenario_id"],
                 "observation_id": f"{scenario['scenario_id']}:{turn_index}",
+                "agent_observation": deepcopy(observation),
                 "raw_model_output": json.dumps(action, sort_keys=True),
                 "parsed_proposed_action": deepcopy(action) if action_is_dict else None,
                 "validator_result": validation.as_dict(),
@@ -141,7 +201,11 @@ def run_episode(
         if action_is_dict and action.get("tool") == "finish":
             break
 
-    task_success = success(state, scenario) if success is not None else None
+    task_success = (
+        success(state, scenario)
+        if success is not None
+        else evaluate_task_success(state, scenario, tool_history)
+    )
     for event in events:
         event["task_success"] = task_success
     return EpisodeResult(

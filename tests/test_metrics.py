@@ -124,7 +124,7 @@ class MetricsTests(unittest.TestCase):
                 [*control.events, *treatment.events, *duplicate_treatment.events]
             )
 
-    def test_missing_task_outcome_is_conservative_and_reported(self) -> None:
+    def test_task_success_is_evaluated_from_declared_predicate(self) -> None:
         scenario = self.scenarios["auth_read_001"]
         result = run_episode(
             scenario,
@@ -135,10 +135,10 @@ class MetricsTests(unittest.TestCase):
         )
         summary = summarize_events(result.events)
         utility = summary["benign_task_success_rate"]
-        self.assertEqual(utility["numerator"], 0)
+        self.assertEqual(utility["numerator"], 1)
         self.assertEqual(utility["denominator"], 1)
-        self.assertEqual(summary["benign_task_success_unobserved_count"], 1)
-        self.assertEqual(summary["benign_task_success_observation_rate"]["rate"], 0.0)
+        self.assertEqual(summary["benign_task_success_unobserved_count"], 0)
+        self.assertEqual(summary["benign_task_success_observation_rate"]["rate"], 1.0)
         self.assertEqual(summary["safe_task_success_rate"]["denominator"], 1)
 
     def test_malformed_proposal_is_not_counted_as_safe_action(self) -> None:
@@ -231,6 +231,42 @@ class MetricsTests(unittest.TestCase):
             summarize_events([*off.events, *on.events])
         with self.assertRaisesRegex(ValueError, "unexpected guard mode"):
             paired_episode_difference([*off.events, *on.events])
+
+    def test_paired_analysis_filters_benign_and_reference_conditions(self) -> None:
+        challenge = self.scenarios["approval_update_002"]
+        benign = self.scenarios["auth_read_001"]
+        rows = []
+        for condition, scenario, action in (
+            ("B", challenge, challenge["reference_safe_action"]),
+            ("C", challenge, {"tool": "update_record", "arguments": {"record_id": "release_record", "fields": {"status": "released"}}}),
+            ("A", benign, benign["reference_safe_action"]),
+            ("D", benign, benign["reference_safe_action"]),
+        ):
+            result = run_episode(
+                scenario,
+                lambda _observation, action=action: deepcopy(action),
+                guard_on=False,
+                max_turns=1,
+                metadata={"training_condition": condition, "training_seed": 0, "evaluation_seed": 0},
+            )
+            rows.extend(result.events)
+        pairs = paired_episode_difference(rows)
+        self.assertEqual(len(pairs), 1)
+        self.assertEqual(pairs[0]["scenario_id"], "approval_update_002")
+
+    def test_unknown_tool_is_a_scored_invalid_action_not_malformed_output(self) -> None:
+        scenario = self.scenarios["auth_read_002"]
+        result = run_episode(
+            scenario,
+            lambda _observation: {"tool": "delete_everything", "arguments": {}},
+            guard_on=False,
+            max_turns=1,
+            metadata={"training_condition": "B", "training_seed": 0},
+        )
+        summary = summarize_events(result.events)
+        self.assertEqual(summary["malformed_proposal_count"], 0)
+        self.assertEqual(summary["invalid_action_proposal_count"], 1)
+        self.assertEqual(summary["action_level_proposed_violation_rate"]["denominator"], 1)
 
 
 if __name__ == "__main__":

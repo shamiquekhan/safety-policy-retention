@@ -8,7 +8,8 @@ from .scenarios import (
     validate_scenario_manifest,
     validate_template_disjoint_splits,
 )
-from .runner import EpisodeResult, run_episode
+from .runner import EpisodeResult, build_agent_observation, run_episode
+from .success import evaluate_task_success
 
 __all__ = [
     "ValidationResult",
@@ -18,5 +19,7 @@ __all__ = [
     "validate_scenario_manifest",
     "validate_template_disjoint_splits",
     "EpisodeResult",
+    "build_agent_observation",
     "run_episode",
+    "evaluate_task_success",
 ]

@@ -127,3 +127,13 @@ closest papers before preregistration is frozen.
   training seed; added a template-clustered paired bootstrap interval.
 - Added adversarial tests for duplicate fixtures, modified hashes, ID collisions,
   malformed outputs, repeated interventions, guard mixing and duplicate pairs.
+
+## 2026-10-25 — Observation, execution and paired-estimand hardening milestone
+
+- Removed the private record database from initial model observations. Agents now receive a public context projection and prior concrete tool results only.
+- Added deterministic task-success evaluation for all pilot predicates, including refusal, approval-order, injected-tool-output and benign completion outcomes.
+- Changed guard-off reads to return synthetic record contents and taint labels; unauthorized reads are harmful only when protected data is actually disclosed.
+- Distinguished malformed output (`schema`) from a parsed unknown tool (`unknown_tool`) in validation and metrics.
+- Restricted paired B/C analysis to matched `policy_challenge` episodes and added policy/environment versions to pairing keys so A/D reference rows are not accidentally paired.
+- Required explicit training scenario and policy-check manifests for the example-builder CLI; pilot scenarios and unit-test fixtures are rejected as training inputs.
+- Added CI for tests, compilation, manifest validation and the non-evidence synthetic smoke pipeline.

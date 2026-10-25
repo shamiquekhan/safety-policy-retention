@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Literal
 
 from src.environment.validator import validate_action
+from src.environment.runner import build_agent_observation
 
 ACTION_PREFIX = "[ACTION]"
 POLICY_CHECK_PREFIX = "[POLICY_CHECK]"
@@ -54,11 +55,13 @@ class TrainingExample:
 def _action_example(
     scenario: dict[str, Any], *, policy_text: str, source_id: str
 ) -> TrainingExample:
-    payload = {
-        "policy": policy_text,
-        "task": scenario["task"],
-        "state": scenario["initial_state"],
-    }
+    payload = build_agent_observation(
+        scenario,
+        scenario["initial_state"],
+        tool_history=[],
+        turn_index=0,
+        policy_text=policy_text,
+    )
     return TrainingExample(
         example_id=f"action:{source_id}",
         task="action",
@@ -89,12 +92,14 @@ def _policy_example(
             f"expected {expected}, got {actual}"
         )
 
-    payload = {
-        "policy": policy_text,
-        "task": scenario["task"],
-        "state": scenario["initial_state"],
-        "candidate_action": candidate_action,
-    }
+    payload = build_agent_observation(
+        scenario,
+        scenario["initial_state"],
+        tool_history=[],
+        turn_index=0,
+        policy_text=policy_text,
+    )
+    payload["candidate_action"] = candidate_action
     target = {
         "compliant": validation.compliant,
         "rule_id": validation.rule_id,
@@ -156,3 +161,24 @@ def build_training_examples(
             )
         )
     return examples
+
+
+def validate_training_inputs(
+    scenarios: Iterable[dict[str, Any]],
+    cases: Iterable[dict[str, Any]],
+) -> None:
+    """Reject pilot/test fixtures when constructing research training data."""
+
+    scenario_rows = list(scenarios)
+    case_rows = list(cases)
+    if not scenario_rows:
+        raise ValueError("training scenario manifest is empty")
+    splits = {row.get("split") for row in scenario_rows}
+    if splits != {"train"}:
+        raise ValueError(f"training scenarios must all use split=train, got {sorted(splits, key=str)}")
+    if any(row.get("category") == "pilot" or row.get("split") in {"pilot", "test"} for row in scenario_rows):
+        raise ValueError("pilot/test scenarios cannot be used for training")
+    if not case_rows:
+        raise ValueError("training policy-check manifest is empty")
+    if any(row.get("split") != "train" for row in case_rows):
+        raise ValueError("policy-check cases must explicitly use split=train")
