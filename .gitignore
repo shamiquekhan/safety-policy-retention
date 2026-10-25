@@ -41,6 +41,7 @@ results/figures/*
 !results/figures/.gitkeep
 *.jsonl
 !data/splits/pilot_scenarios.jsonl
+!tests/fixtures/validator_cases.jsonl
 *.parquet
 *.sqlite
 *.db
