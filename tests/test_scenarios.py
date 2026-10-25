@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 from src.environment.scenarios import (
+    scenario_hash,
     validate_scenario_manifest,
     validate_template_disjoint_splits,
 )
@@ -28,6 +29,17 @@ class ScenarioManifestTests(unittest.TestCase):
         scenarios[0] = {**scenarios[0], "split": "train"}
         with self.assertRaisesRegex(ValueError, "templates cross split"):
             validate_template_disjoint_splits(scenarios)
+
+    def test_duplicate_scenario_id_is_rejected(self) -> None:
+        scenarios = load_jsonl(SCENARIO_PATH)
+        with self.assertRaisesRegex(ValueError, "duplicate scenario_id"):
+            validate_scenario_manifest([*scenarios, scenarios[0]])
+
+    def test_semantic_change_changes_scenario_hash(self) -> None:
+        scenarios = load_jsonl(SCENARIO_PATH)
+        original = scenario_hash(scenarios[0])
+        changed = {**scenarios[0], "task": "Read a different report."}
+        self.assertNotEqual(original, scenario_hash(changed))
 
 
 if __name__ == "__main__":

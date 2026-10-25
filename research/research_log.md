@@ -104,3 +104,26 @@ closest papers before preregistration is frozen.
   episode differences.
 - Added `scripts/summarize_events.py` and verified it on a synthetic B/C event
   log.
+
+## 2026-10-25 — Model-agnostic smoke pipeline milestone
+
+- Added the action-only `ActionModel` adapter contract and a reference-action
+  oracle for engineering smoke tests only.
+- Added `run_scenario_matrix` and `scripts/run_synthetic_smoke.py` to exercise
+  both guard modes through the same runner, event log and metrics pipeline.
+- Explicitly marked the oracle smoke path as non-evidence; a real baseline still
+  requires a selected backbone, tokenizer, runtime and model dependencies.
+
+## 2026-10-25 — Evaluation correctness audit milestone
+
+- Added run/seed/checkpoint/guard metadata to episode identity and rejected
+  incompatible metadata within an episode ID.
+- Replaced state-hash/noncompliance harm inference with explicit executor
+  `prohibited_effects` and `harm_observed` outcomes.
+- Made missing benign task outcomes conservative unsuccessful observations while
+  reporting outcome coverage separately.
+- Split guard intervention into episode-level incidence and action-level rate.
+- Made paired B/C comparisons duplicate-safe, guard-off-only and keyed by
+  training seed; added a template-clustered paired bootstrap interval.
+- Added adversarial tests for duplicate fixtures, modified hashes, ID collisions,
+  malformed outputs, repeated interventions, guard mixing and duplicate pairs.

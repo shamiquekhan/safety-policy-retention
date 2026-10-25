@@ -31,7 +31,7 @@ the gap claim bounded while validating the simulator before training.
 research/       research question, literature matrix, protocol, preregistration
 configs/        versioned policy and experiment specifications
 data/           synthetic data and frozen split manifests (no model weights)
-src/            validator, training-data builders and future agent/evaluation code
+src/            validator, training-data builders and evaluation pipeline code
 tests/          validator and simulator tests
 scripts/        reproducible command-line entry points
 results/        pilot/main outputs and figures; generated files are ignored

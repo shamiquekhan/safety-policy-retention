@@ -60,3 +60,12 @@ logging_contract:
   append_only_event_log: true
   required_state_hashes: [state_before_hash, state_after_hash]
   proposal_and_execution_logged_separately: true
+  explicit_prohibited_effects: true
+  harm_metric_source: executor_effects_not_state_hash_proxy
+  episode_identity_fields:
+    - run_id
+    - scenario_id
+    - training_condition
+    - training_seed
+    - evaluation_seed
+    - evaluation_guard_mode

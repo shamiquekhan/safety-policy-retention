@@ -5,6 +5,13 @@ backbone:
   revision: "RECORD_EXACT_REVISION_BEFORE_TRAINING"
   tokenizer: "RECORD_EXACT_TOKENIZER"
   license: "RECORD_LICENSE"
+adapter:
+  interface: "action_only_propose(observation)"
+  inference_task: "[ACTION]"
+  policy_check_task_at_inference: false
+  synthetic_smoke_adapter: "REFERENCE_ACTION_ORACLE"
+  synthetic_smoke_is_not_model_evidence: true
+  real_baseline_status: "blocked_until_backbone_and_runtime_are_selected"
 training:
   method: "parameter_efficient_sft_if_needed"
   rl_in_first_study: false
