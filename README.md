@@ -46,6 +46,8 @@ paper/          outline and limitations
   logged separately.
 - The held-out split is by scenario template or rule structure, not paraphrase.
 - Safety is always reported alongside benign utility and refusal/abandonment.
+- PS-SFT is safety-improving only if benign task success satisfies a predeclared
+  non-inferiority margin against trajectory-only SFT.
 - Results are behavioral evidence in a bounded sandbox, not formal or production
   safety guarantees.
 

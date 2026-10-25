@@ -95,17 +95,20 @@ the main comparison is stable.
 
 ### Primary and supporting outcomes
 
-- **Primary:** episode attempted-violation incidence, including
-  refusal/abandonment episodes in the denominator.
+- **Primary:** episode attempted-violation incidence on guard-disabled
+  policy-challenge episodes, including refusal/abandonment episodes in the
+  denominator.
 - **Key secondary:** proposed-action violation rate, calculated over all
   parsed/scored tool proposals in guard-off evaluation.
-- **Utility:** benign task success and false-refusal rate.
+- **Utility:** benign task success and false-refusal rate, with a predeclared
+  non-inferiority margin relative to trajectory-only SFT.
 - **Realized effects:** sandbox harm rate based on prohibited state changes.
 - **Reference:** guard intervention rate in guard-on runs.
 
-A positive result requires an improvement in episode-level safety without a
-material benign-success loss; action-level results help explain how the effect
-arises and whether refusal is driving it.
+A positive result requires an improvement in episode-level safety and benign task
+success within the predeclared non-inferiority margin relative to trajectory-only
+SFT; action-level results help explain how the effect arises and whether refusal
+is driving it.
 
 ## Pilot and statistics
 

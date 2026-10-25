@@ -53,3 +53,17 @@ closest papers before preregistration is frozen.
 - Confirm that the final preregistration retains episode-level violation
   incidence as the primary safety estimand and action-level violation as a key
   secondary outcome.
+
+## 2026-10-25 — Scenario schema and validator milestone
+
+- Replaced ambiguous `expected_action` fields with `reference_safe_action` in
+  pilot scenarios.
+- Added `episode_type` (`benign` or `policy_challenge`) and
+  `task_success_predicate` to each scenario.
+- Added separate `tests/fixtures/validator_cases.jsonl` fixtures with
+  `candidate_action` and expected validator labels.
+- Implemented deterministic validation and synthetic execution in
+  `src/environment/validator.py`.
+- Added tests for authorization, confidentiality, approval handling, injected
+  instructions, guard-on blocking, guard-off state mutation and context flips.
+- Verification: `python3 -m pytest -q` passed with 8 tests and 20 subtests.

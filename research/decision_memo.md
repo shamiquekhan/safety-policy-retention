@@ -51,6 +51,17 @@ unsafe. Fine-tuning reliability work motivates multiple seeds and repeated
 decoding measurements. These works inform the protocol but do not provide the
 proposed training-signal comparison.
 
+### Adjacent training and enforcement methods
+
+Policy-specific alignment, safe-completion training, proximal SFT and preference-
+based safety optimization motivate alternative training interventions, but they
+should not be conflated with PS-SFT. In particular, PREFINE belongs in the
+adjacent-methods discussion because it studies preference-based reward/cost
+fine-tuning for sequential continuous-control policies rather than the proposed
+stateful tool-agent guard-removal comparison. Runtime systems such as PolicyGuide,
+ActPlane, AdaGuard and policy-first tooling are useful guard-on references, not
+direct evidence of retained unguarded behavior.
+
 ## 2. What remains different enough to justify the study?
 
 The defensible gap is **not** “nobody has distilled harness behavior,” “nobody
@@ -76,6 +87,13 @@ Four controls make this gap meaningful:
 
 This gap is viable only if the full-text/code audit does not reveal an existing
 paper with all four controls.
+
+HPD and SafeEvolve must remain in the direct-overlap audit. They are not
+irrelevant to this question: HPD explicitly supervises runtime semantics, and
+SafeEvolve combines harness-use SFT with harness-augmented RL. The narrower
+candidate contribution is the matched SFT-only comparison in which corrected
+trajectories are held constant while policy supervision changes, followed by
+guard-disabled action/state evaluation under held-out shifts.
 
 ## 3. What result would still be worth reporting?
 

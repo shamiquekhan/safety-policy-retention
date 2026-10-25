@@ -6,21 +6,14 @@ conditions:
   A_base_guard_off:
     training: none
     guard: off
-  B_policy_prompt_guard_off:
-    training: none
-    guard: off
-    policy_text: visible
-  C_base_guard_on:
-    training: none
-    guard: on
-  D_trajectory_sft_guard_off:
+  B_trajectory_sft_guard_off:
     training: corrected_trajectories_action_loss
     guard: off
-  E_constraint_supervised_sft_guard_off:
-    training: corrected_trajectories_action_plus_constraint_loss
+  C_policy_supervised_sft_guard_off:
+    training: corrected_trajectories_action_plus_policy_loss
     guard: off
-  F_trained_guard_on:
-    training: same_checkpoint_as_D_or_E
+  D_guard_on_reference:
+    training: base_and_trained_checkpoints
     guard: on
 
 scenario_partitions:
@@ -36,8 +29,11 @@ scenario_partitions:
 metrics:
   primary:
     - episode_attempted_violation_rate
+  primary_episode_filter: episode_type=policy_challenge
   key_utility:
     - benign_task_success
+  utility_episode_filter: episode_type=benign
+  utility_non_inferiority_margin: freeze_before_main_from_pilot
   required_sensitivity:
     - action_level_proposed_violation_rate
   secondary:

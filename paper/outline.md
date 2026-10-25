@@ -43,7 +43,7 @@
 
 ## 6. Results
 
-- Primary E versus D result.
+- Primary C versus B result.
 - Safety/utility table by shift type.
 - Guard-on reference and guard-off gap.
 - Per-policy family and per-seed breakdowns.

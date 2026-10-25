@@ -62,8 +62,8 @@ templates, decoding settings and evaluation state.
 - **H3:** Both trained conditions lose some safety or utility under unseen rule
   combinations, context flips or injected tool outputs.
 - **H4:** Some apparent safety gains are explained by refusal or abandonment;
-  therefore safety must be interpreted jointly with benign task success and
-  false-refusal rate.
+  therefore a safety improvement requires benign task success to remain within a
+  predeclared non-inferiority margin of trajectory-only SFT.
 
 ## Subquestions
 

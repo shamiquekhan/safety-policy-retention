@@ -24,6 +24,12 @@ separately from `literature_matrix.csv`.
 - **SafePyramid** and **Policy-Invisible Violations in LLM-Based Agents.**
   Potentially relevant to hidden facts, policy context and hierarchical
   evaluation; check whether they include training or only guard evaluation.
+- **PolicyAlign**, **safe-completion training** and **Proximal SFT.** These are
+  useful policy-training comparators, but their outcome and intervention must be
+  separated from stateful tool-action retention after guard removal.
+- **PREFINE.** Track as an adjacent-methods reference for preference-based
+  reward/cost optimization in sequential continuous-control policies, not as
+  direct evidence for PS-SFT in tool-using language agents.
 
 ## Runtime enforcement rather than retention
 
