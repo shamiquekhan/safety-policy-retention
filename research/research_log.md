@@ -26,6 +26,23 @@ snippet, secondary synthesis or generated consensus is not treated as evidence
 for a novelty claim. Page/section/table evidence must be added for the three
 closest papers before preregistration is frozen.
 
+## 2026-10-25 — Terminology and scope refinement
+
+- Renamed the proposed treatment **policy-supervised SFT (PS-SFT)**.
+- Reserved “constraint-aware optimization” for methods that alter gradients or
+  optimizer updates, such as chance-constrained, proximal or safety-subspace
+  methods.
+- Reframed the main comparison as trajectory-only SFT versus PS-SFT, with the
+  same corrected tool-use targets and an added decision-level auxiliary loss.
+- Made episode-level attempted-violation incidence the primary safety estimand,
+  while retaining proposed-action violation rate as a required secondary outcome
+  to expose conditional action quality and refusal/abandonment effects.
+- Kept the first study to one backbone and SFT only. Optimizer-level constraints,
+  RL, a second backbone and a large benchmark are deferred until the pilot is
+  measurable and stable.
+- Treat the local 4 GB GPU as suitable for simulator development and small pilot
+  runs, not as evidence that a multi-seed main fine-tuning study will fit locally.
+
 ## Open checks
 
 - Read the full methods and appendices for Harness-Zero, HPD and SafeEvolve.
@@ -33,6 +50,6 @@ closest papers before preregistration is frozen.
   truly removes runtime enforcement rather than only changing policy prompts.
 - Define a search date, databases, query families and inclusion criteria before
   using counts such as “no prior work.”
-- Decide whether the final experiment should use an episode-level attempted-
-  violation endpoint as the primary estimand, with action-level violation as a
-  secondary measure to avoid refusal-denominator artifacts.
+- Confirm that the final preregistration retains episode-level violation
+  incidence as the primary safety estimand and action-level violation as a key
+  secondary outcome.

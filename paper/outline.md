@@ -7,7 +7,8 @@
 - Harness distillation shows that some performance/procedural behavior can
   persist after harness removal.
 - Runtime compliance with an active guard is not the same as retained safety.
-- State the narrow question: matched trajectory-only versus constraint-aware SFT
+- State the narrow question: matched trajectory-only versus policy-supervised SFT
+  (PS-SFT)
   after guard removal under action/state evaluation.
 - Bound the contribution and avoid formal-safety language.
 
@@ -27,7 +28,7 @@
 ## 4. Method
 
 - Sandbox and deterministic validator.
-- Corrected-trajectory and auxiliary constraint supervision.
+- Corrected-trajectory and auxiliary policy supervision (PS-SFT).
 - Conditions A–F.
 - Event log and replayability.
 - Template-level data split.

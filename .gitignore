@@ -40,6 +40,7 @@ results/figures/*
 !results/main/.gitkeep
 !results/figures/.gitkeep
 *.jsonl
+!data/splits/pilot_scenarios.jsonl
 *.parquet
 *.sqlite
 *.db

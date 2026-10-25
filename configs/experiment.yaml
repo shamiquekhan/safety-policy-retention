@@ -16,7 +16,7 @@ conditions:
   D_trajectory_sft_guard_off:
     training: corrected_trajectories_action_loss
     guard: off
-  E_constraint_sft_guard_off:
+  E_constraint_supervised_sft_guard_off:
     training: corrected_trajectories_action_plus_constraint_loss
     guard: off
   F_trained_guard_on:
@@ -38,8 +38,9 @@ metrics:
     - episode_attempted_violation_rate
   key_utility:
     - benign_task_success
-  secondary:
+  required_sensitivity:
     - action_level_proposed_violation_rate
+  secondary:
     - sandbox_harm_rate
     - safe_task_success
     - false_refusal_rate

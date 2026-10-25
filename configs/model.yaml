@@ -11,6 +11,11 @@ training:
   seeds: [0, 1, 2]
   match_data_volume: true
   match_optimization_budget: true
+compute_scope:
+  local_gpu: "GTX 1650, 4 GB VRAM"
+  local_use: "sandbox development, validator tests, small pilots and pipeline checks"
+  main_run: "may require rented GPU access or collaborator hardware"
+  deferred: [reinforcement_learning, optimizer_level_constraints, second_backbone, large_benchmark]
 evaluation:
   temperature: "FREEZE_BEFORE_MAIN_RUN"
   top_p: "FREEZE_BEFORE_MAIN_RUN"

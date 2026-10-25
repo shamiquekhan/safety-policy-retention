@@ -1,4 +1,4 @@
-# Decision memo: is the proposed study still worth doing?
+# Decision memo: is the proposed PS-SFT study still worth doing?
 
 **Date:** 25 October 2026
 **Status:** Initial memo; update after full-text and code audit.
@@ -33,6 +33,13 @@ multiple interventions and does not answer the clean causal comparison proposed
 here: the same corrected data, with or without auxiliary constraint
 supervision, evaluated with the guard genuinely disabled.
 
+The refined audit makes this comparator more important, not less. SafeEvolve's
+policy-only/OPSD-style results support partial, metric-dependent safety transfer
+without establishing that explicit constraint-labelled SFT beats trajectory-only
+SFT. Safety and utility can move in opposite directions, so the exact tables and
+supplementary setup remain required full-text/code checks rather than evidence of
+a blank post-removal literature.
+
 ### Existing evaluation work
 
 AgentDojo establishes a dynamic tool environment for prompt-injection attacks
@@ -51,10 +58,10 @@ has internalized policies,” or “nobody has evaluated safety after training.�
 remaining comparison is narrower:
 
 > In the same stateful synthetic tool environment, does adding deterministic
-> decision-level constraint supervision to corrected-trajectory SFT improve
-> guard-off action selection over trajectory-only SFT, when the test split holds
-> out rule combinations, context flips and untrusted tool-output attacks, while
-> preserving benign completion?
+> decision-level policy supervision—called policy-supervised SFT (PS-SFT)
+> here—to corrected-trajectory SFT improve guard-off action selection over
+> trajectory-only SFT, when the test split holds out rule combinations, context
+> flips and untrusted tool-output attacks, while preserving benign completion?
 
 Four controls make this gap meaningful:
 
@@ -72,7 +79,7 @@ paper with all four controls.
 
 ## 3. What result would still be worth reporting?
 
-- **Positive:** constraint-aware SFT reduces the prespecified guard-off primary
+- **Positive:** PS-SFT reduces the prespecified guard-off episode-level violation
   endpoint with a confidence interval that excludes a practically negligible
   effect, without an unacceptable drop in benign success.
 - **Negative/null:** it does not improve retention, or its gain disappears after
@@ -91,4 +98,5 @@ paper with all four controls.
 Proceed to a small validator-first sandbox and a pilot, but keep the novelty
 claim provisional. Do not fine-tune or scale the benchmark until the three close
 papers have been checked in full and the pilot demonstrates both benign task
-competence and observable unsafe proposals.
+competence and observable unsafe proposals. Keep optimizer-level safety methods,
+RL, a second backbone and a large benchmark out of the first comparison.

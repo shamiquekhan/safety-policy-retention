@@ -57,4 +57,4 @@ For each candidate, record:
 
 Only a paper satisfying the relevant fields should be allowed to displace the
 current gap statement. In particular, a high active-guard compliance score is not
-evidence that constraint-aware SFT improves guard-off retention.
+evidence that policy-supervised SFT (PS-SFT) improves guard-off retention.

@@ -9,10 +9,15 @@ runtime guard is disabled.
 **Stage:** literature audit and protocol design. No model fine-tuning has started.
 
 **Working question:** Does adding explicit, machine-checkable constraint
-supervision to corrected-trajectory SFT reduce post-guard-removal policy
-violations compared with trajectory-only SFT, while preserving legitimate task
-completion under held-out policy combinations, state changes and synthetic
-indirect prompt injection?
+supervision—called **policy-supervised SFT (PS-SFT)** here—to corrected-
+trajectory SFT reduce post-guard-removal policy violations compared with
+trajectory-only SFT, while preserving legitimate task completion under held-out
+policy combinations, state changes and synthetic indirect prompt injection?
+
+PS-SFT means decision-level policy labels or an auxiliary policy-classification
+loss added to the same corrected tool-use targets. It does not refer to
+optimizer-level methods such as chance-constrained updates, proximal objectives
+or safety-gradient projection; those are separate future comparisons.
 
 This is a candidate contribution, not a confirmed novelty claim. The closest
 literature already covers harness distillation, runtime-semantics supervision,
@@ -48,9 +53,11 @@ paper/          outline and limitations
 
 1. `research/research_question.md`
 2. `research/literature_matrix.csv`
-3. `research/decision_memo.md`
-4. `research/experiment_protocol.md`
-5. `research/preregistration.md` (draft; not frozen until the pilot is stable)
+3. `research/priority_literature_matrix.csv`
+4. `research/decision_memo.md`
+5. `research/experiment_protocol.md`
+6. `research/preregistration.md` (draft; not frozen until the pilot is stable)
+7. `data/splits/pilot_scenarios.jsonl`
 
 ## Reproducibility rule
 
